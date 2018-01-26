@@ -6,7 +6,7 @@
 V8引擎
 libuv
 REPL read-eval-print loop
-为网络诞生的平台
+为网络诞生的平台
 单线程非阻塞i/o相较于多线程阻塞i／o节省了创建多线程的开销
 缺点是不符合设计思维，让流程控制变得晦涩难懂
 node不鼓励使用同步io
@@ -14,9 +14,9 @@ node不鼓励使用同步io
 Node--npm Python--pip Ruby--gem
 npm安装包时如果注册在本地可以通过require引用，如果需要使用命令行，则需安装到全局（安装到全局时配置了PATH）
 ```
-监控模块的工具
+监控模块的工具
 ```
-nodemon 
+nodemon 
 suepervisor
 node-dev
 ```
