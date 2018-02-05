@@ -3,5 +3,5 @@
 这本蠢萌的笔记本用来专门记录读书过程中的一些代码和笔记
 
 # 书单
-* 《深入浅出Node.js》（EasyToUderstandNode）
-* 《Node.js开发指南》 （NodeDevelopmentgGuide）
+* 《深入浅出Node.js》
+* 《Node.js开发指南》
