@@ -5,3 +5,4 @@
 # 书单
 * 《深入浅出Node.js》
 * 《Node.js开发指南》
+* 《深入浅出React和Redux》
