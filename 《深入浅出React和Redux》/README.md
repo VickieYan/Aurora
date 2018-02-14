@@ -11,6 +11,9 @@
 * 单向数据流
 * Redux = Reducer + Flux
 * reselector
+* 谨慎使用ref(直接接触DOM),也尽量让ref不要跨越组件的边界。
+* bindActionCreators
+* webpack的loader中使用 extract-text-webpack-plugin可以让CSS单独一个文件
 
 # React生命周期
 ### 装载过程
@@ -64,3 +67,13 @@ export { actions, reducer, view }
 * 树状结构扁平
 
 >传统的关系型数据库中，对诗句结构的的各种“范式化”，其实就是在去除数据的冗余。而近年风生水起的NoSQL运动，提倡的就是在数据存储中“去范式化”，对数据结构的处理和关系型数据库正好相反，利用数据的冗余来减少读取数据库时的数据关联工作。
+
+# 工具
+* React Devtools
+* Redux Devtools
+* React Perf
+* redux-immutable-state-invariant(检查reducer是否为纯函数)
+* UglifyJsPlugin(不修改全局变量 如window)
+
+# React组件的性能优化
+### 单个React组件的性能优化
