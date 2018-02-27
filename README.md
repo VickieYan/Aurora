@@ -6,3 +6,4 @@
 * 《深入浅出Node.js》
 * 《Node.js开发指南》
 * 《深入浅出React和Redux》
+* 《高性能JavaScript》
