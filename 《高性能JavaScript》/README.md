@@ -1,5 +1,9 @@
-# 《高性能JavaScript》
+`总结：
+
+
+
 ## 加载和执行
+
 浏览器在执行JavaScript 代码时，页面渲染和用户交互被阻塞。
 
 ### 脚本的位置
@@ -169,18 +173,189 @@ HTML集合对象是一个类似数组的列表。它们并不是真正的数组�
 
 使用children替代childNodes会更快，因为集合项更少。
 
-###### 选择器API
+##### 选择器API
 
 如果需要处理大量的组合查询，使用querySelectorAll()会更有效率。
 
+### 重绘与重排
 
+#### 重排何时发生
 
+当也变布局和几何属性改变时就需要“重排”。
 
+* 添加或删除可见的DOM元素
+* 元素位置改变。
+* 元素尺寸改变。
+* 内容改变。
+* 页面渲染器初始化。
+* 浏览器窗口尺寸改变。
 
+#### 渲染树变化的排队与刷新
 
+不要再布局信息改变时查询无关的属性，会导致刷新渲染队列并重排。
+
+#### 最小化重绘和重排
+
+一个好的提高程序响应速度的策略就是减少重绘和重排操作的发生。为了减少次数，应该合并多次对DOM和样式的修改。
+
+##### 改变样式
+
+栗子:
+
+```javascript
+var el = document.getElementById('mydiv')
+el.style.borderLeft = '1px'
+el.style.borderRight = '2px'
+el.style.padding = '5px'
+```
+
+方式一：
+
+使用cssText属性合并所有的改变。
+
+```javascript
+var el = document.getElementById('mydiv')
+el.style.cssText = 'border-left: 1px; border-right: 2px; padding: 5px;'
+```
+
+方式二：
+
+通过类名修改css样式。
+
+ ```javascript
+var el = document.getElementById('mydiv')
+el.className = 'active'
+ ```
+
+##### 批量修改DOM
+
+可以通过以下步骤减少重绘和重排的次数：
+
+1. 使元素脱离文档流
+2. 对其引用多重改变
+3. 把元素带回文档中
+
+有三种基本方法可以使DOM脱离文档：
+
+* 隐藏元素
+* 使用文档片段(document fragment)在当前DOM之外构建一个子树（推荐）
+* 将原始元素拷贝到一个脱离文档的节点中
+
+#### 缓存布局信息
+
+#### 让元素脱离动画流
+
+#### IE和hover
+
+### 事件委托（冒泡）
+
+当页面中存在大量元素，而且每一个都要一次或多次绑定事件处理器时，这种情况可能会影响性能。每绑定一个事件处理器都是有代价的，要么是加重了页面的负担，增加了运行期的执行时间，时间绑定占用了处理时间，而且浏览器需要追逐每个事件处理器，这也会占用更多的内存。
+
+### 小结
+
+* 最小化DOM访问次数，尽可能在JavaScript端处理。
+* 如果需要多次访问某个DOM节点，请使用局部变量存储它的引用。
+* 小心处理HTML集合，因为它实时连系着底层文档。把集合的长度缓存到一个变量中，并在迭代中使用它，如果需要经常操作集合，建议把它拷贝到一个数组中。
+* 如果可能的话，使用速度更快的API，比如querySelectorAll()和firstElementChild/
+* 要留意重绘和重排；批量修改样式时，“离线”操作DOM树，使用缓存，并减少访问局部信息的次数。
+* 动画中使用绝对定位，使用拖放代理。
+* 使用事件委派来减少时间处理器的数量。
 
 ## 算法和流程控制
+
+### 循环
+
+#### 循环的类型
+
+for循环、while循环、do-while循环、for-in循环
+
+#### 循环性能
+
+在JavaScript提供的四种循环类型，只有for-in循环比其他几种明显要慢。由于每次迭代操作会同时搜索实例或原型链属性，for-in循环的每次迭代会产生更多开销，因此比其他类型要慢。**不要用for-in来遍历数组成员**
+
+##### 减少迭代的工作量
+
+###### 减少迭代次数
+
+Duff's Device
+
+#### 基于函数的迭代
+
+forEach
+
+在所有情况下，基于循环的迭代比基于函数的迭代快8倍
+
+### 条件语句
+
+#### if-else对比switch
+
+条件数量越大，越倾向于使用switch。
+
+#### 优化if-else
+
+* 确保最可能出现的条件放在首位。
+* 把if-else组织成一系列嵌套的if-else语句。
+
+#### 查找表
+
+```javascript
+var results = [result0, result1, result2, result3, result4, result5]
+return results[value]
+```
+
+### 递归
+
+递归函数的潜在问题是终止条件不明确或缺少终止条件会导致函数长时间运行，并使得用户界面处于假死状态。
+
+#### 调用栈限制
+
+#### 递归模式
+
+#### 迭代
+
+任何递归能实现的算法也可以同样用迭代来实现。
+
+#### Memoization
+
+```javascript
+// fundamental需要增加缓存功能的函数 cache可选的缓存对象
+function memoriza(fundamental, cache) {
+    cache = cache || {}
+    var shell = function(arg) {
+        if(!cache.hasOwnProperty(arg)) {
+            cache[arg] = fundamental(arg)
+        }
+        return cache[arg]
+    }
+    return shell
+}
+```
+
+### 小结
+
+* for、while和do-while循环性能相似，所以没有一种循环类型明显快于或慢于其他类型。
+* 避免使用for-in循环，除非你要遍历一个属性数量未知的对象。
+* 改善循环性能的最佳方式是减少每次迭代的运算量和减少循环迭代次数。
+* 通常来说，switch总是比if-else快，但并不是最佳解决方案。
+* 在判断条件较多时，使用查找表比if-else和switch更快。
+* 浏览器的调用栈大小限制了递归算法在JavaScript中的应用；栈溢出错误会导致其他代码中断运行。
+* 如果你遇到栈溢出错误，可将方法改为迭代算法，或使用Memoization来避免重复计算。
+
 ## 字符串和正则表达式
+
+### 字符串连接
+
+字符串合并的方法
+
+```javascript
+// 方法一
+str = 'a' + 'b' + 'c'
+// 方法二
+str 
+```
+
+
+
 ## 快速响应的用户界面
 ## Ajax
 ## 编程实践
