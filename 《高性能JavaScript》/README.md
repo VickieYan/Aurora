@@ -20,7 +20,7 @@
 
 在页面加载完成后才加载JavaScript代码 =>  window.onload
 
-####延迟的脚本
+#### 延迟的脚本
 
 defer
 
