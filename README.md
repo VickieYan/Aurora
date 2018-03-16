@@ -4,7 +4,8 @@
 
 # 书单
 
-* 《高性能JavaScript》
-* 《深入浅出React和Redux》
-* 《Node.js开发指南》
-* 《深入浅出Node.js》
+* 《高性能JavaScript》 ![progress](http://progressed.io/bar/100)
+* 《Node.js开发指南》 ![progress](http://progressed.io/bar/100)
+* 《深入浅出React和Redux》 ![progress](http://progressed.io/bar/38)
+* 《深入浅出Node.js》![progress](http://progressed.io/bar/10)
+* 《JavaScript设计模式与开发实践》 ![progress](http://progressed.io/bar/0)
