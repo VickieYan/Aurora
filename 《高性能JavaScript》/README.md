@@ -1,3 +1,4 @@
+![mindnode](./高性能JavaScript.png)
 ## 加载和执行
 
 浏览器在执行JavaScript 代码时，页面渲染和用户交互被阻塞。
