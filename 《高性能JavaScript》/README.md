@@ -1,7 +1,3 @@
-`总结：
-
-
-
 ## 加载和执行
 
 浏览器在执行JavaScript 代码时，页面渲染和用户交互被阻塞。
@@ -64,9 +60,7 @@ xhr.send(null)
 
 * </body>闭合标签之前，将所有<script>标签放到页面底部。
 * 合并脚本。
-* 多种无阻塞下载JavaScript的方法： defer、动态创建、XHR
-
-​                                                                                                                                                                                                                                                                                                  
+* 多种无阻塞下载JavaScript的方法： defer、动态创建、XHR                                                                                                                                                                                                                                                                                                
 
 ## 数据访问
 
@@ -90,7 +84,7 @@ with、catch
 
 #### 闭包，作用域和内存
 
-```javascript
+```
 function assignEvents() {
     var id  = "xdi9592"
     document.getElementById('save-btn").onclick = function(event) {
