@@ -83,6 +83,8 @@ const objectFatory = function() {
     return typeof ret === 'object' ? ret : obj //step4 返回对象
 }
 
+const p = objectFatory(Person, 'Vickie')
+
 ```
 
 #### 对象会记住它的原型
@@ -134,6 +136,60 @@ Function.prototype.bind = function(context) {
 * 借用方法 经常使用Array.prototype上的方法
 
 ### 闭包和高阶函数
+#### 什么是函数式编程
+这里引用一下阮一峰博客里面的解释。我们来实现一个数学表达式：(1+2)*3-4
+```javascript
+// 传统的过程式编程
+const a = 1 + 2
+const b = a * 3
+const c = b - 4
+
+//函数式编程要求使用函数
+const result = subtract(multiply(add(1, 2), 3), 4)
+```
+
+#### 闭包的经典应用
+```html
+<html>
+    <body>
+        <div>1</div>
+        <div>2</div>
+        <div>3</div>
+        <div>4</div>
+        <div>5</div>
+    <script>
+        const nodes = document.getElementByTagName('div')
+        const len = nodes.length
+        for(let i = 0; i < len; i++) {
+            (function(i){
+                nodes[i].onclick = function() {
+                    alert(i)
+                }
+            })(i)
+        }
+    </script>
+    </body>
+</html>
+```
+#### 闭包的作用
+封装变量
+```javascript
+// 为了不把cache暴露在全局作用域下，我们做如下操作
+const mult = (function() {
+    const cache = {}
+    const calculate = function() {
+        return Array.prototype.slice.call(arguments).reduce((accumulator, currentValue) => accumulator * currentValue)
+    }
+
+    return function() {
+        const args = Array.prototype.join.call(arguments, ',')
+        if(args in cache) {
+            return cache[args]
+        }
+        return cache[args] = calculate.apply(null, arguments)
+    }
+})()
+```
 
 
 
