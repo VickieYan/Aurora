@@ -1,5 +1,6 @@
 # 《JavaScript设计模式与开发实践》
 设计模式：在面向对象软件设计过程中针对特定问题的简洁而优雅的解决方案。
+
 设计模式在很多时候都体现了语言的不足之处，设计模式是对语言不足的补充。
 ## 基础知识
 ### 面向对象的JavaScript
@@ -78,8 +79,8 @@ const objectFatory = function() {
     const obj = new Object() // step1 创建一个对象
     const Constructor = [].shift.call(arguments)
     obj.__proto__ = Constructor.prototype //step2 将构造函数作用域复制给新对象并执行原型链连接
-    const ret = Constructor.apply(obj, arguments) // 执行构造函数中的代码
-    return typeof ret === 'object' ? ret : obj // 返回对象
+    const ret = Constructor.apply(obj, arguments) //step3 执行构造函数中的代码
+    return typeof ret === 'object' ? ret : obj //step4 返回对象
 }
 
 ```
@@ -88,6 +89,50 @@ const objectFatory = function() {
 JavaScript给对象提供了一个名为__proto__的隐藏属性，某个对象的__proto__属性默认会指向构造器的原型对象。
 
 ### this、call和apply
+#### this的指向
+* 对象的方法调用 this指向该对象
+* 普通函数调用 this指向全局对象window
+* 构造器调用 this指向返回的对象
+* Funtion.prototype.call或Function.prototype.apply 动态传入this
+
+#### this的丢失
+为了简化代码，我们尝试以下的操作
+```javascript
+const getId = document.getElementById
+getId('box')
+```
+我们会发现通过上述方法是不能拿到box这个DOM节点的，因为在大多数浏览器的getElementById这个方法中，都是存在对this的引用的。我们在上述的做法中，相当于直接调用了该方法，this指向全局对象，这个现象就是this的丢失。
+
+为了防止this的丢失，我们对document.getElementById这个方法做了如下改进：
+```javascript
+document.getElementById = (function(func) {
+    return function() {
+        return func.apply(document, arguments)
+    }
+})(document.getElementById)
+```
+理清这个函数的思路，归根结底就是在每次调用document.getElementById这个函数时将函数内的this指向document。
+
+#### call和apply的区别
+这个话题是老生常谈，肯定不止在这一本书里见过。他们的作用一模一样，只是传入的参数形式有别。
+* func.apply(null, [1,2,3])
+* func.call(null,1,2,3)
+
+### bind
+我们来手动实现一个bind方法
+```javascript
+Function.prototype.bind = function(context) {
+    const self = this // 保存原函数
+    return function() {
+        return self.apply(context, arguments)
+    }
+}
+```
+
+#### call和apply的用处
+* 改变this
+* 借用方法 经常使用Array.prototype上的方法
+
 ### 闭包和高阶函数
 
 
