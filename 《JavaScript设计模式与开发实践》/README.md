@@ -193,8 +193,103 @@ const mult = (function() {
 
 
 
+
+##### uncurrying
+反柯里化扩大函数的适用范围
+```javascript
+Function.prototype.uncurrying = function() {
+    const self = this
+    return function() {
+        const obj = Array.prototype.shift.call(arguments)
+        return self.apply(obj, arguments)
+    }
+}
+
+const push = Array.prototype.push.uncurrying()
+```
+
+##### 函数节流
+函数被频繁调用的场景：
+* window.onresize
+* mousemove
+* 上传进度
+```javascript
+const throttle = function(fn, interval) {
+    const _self = fn,
+          timer,
+          firstTime = true
+    return function() {
+        const  args = arguments,
+               __me = this
+        if (firstTime) {
+            __self.apply(__me, args)
+            return firstTime = false
+        }
+
+        if(timer) {
+            return false
+        }
+
+        timer = setTimeout(function() {
+            clearTimeout(timer)
+            timer = null
+            __self.apply(__me, args)
+        }, interval || 500)
+    }
+}
+```
+
+##### 分时函数
+```javascript
+const timeChunk = function(ary, fn, count) {
+    const obj, t
+    const len = ary.length
+    const start =  function() {
+        for (let i = 0; i < Math.min(count || 1, ary.length); i++) {
+            const obj = ary.shift()
+            fn(obj)
+        }
+    }
+
+    return function() {
+        t = setInterval(function() {
+            if (ary.length === 0)  {
+                return clearInterval(t)
+            }
+            start()
+        }, 200)
+    }
+}
+```
+##### 惰性加载函数
+```javascript
+const addEvent = function(elem, type, handler) {
+    if (window.addEventListener) {
+        addEvent = function(elem, type, handler) {
+            elem.addEventListener(type, false, false)
+        }
+    } else if (window.attachEvent) {
+        addEvent = function(elem, type, handler) {
+            elem.attachEvent('on' + type, handler)
+        }
+    }
+    addEvent(elem, type, handler)
+}
+```
+这个操作也比较神奇，第一次进入这个函数，函数内部会重写这个函数，减少了冗余的条件判断。
+
+
 ## 设计模式
 ### 单例模式
+定义：保证一个类仅有一个实例，并提供一个访问它的全局访问点。
+
+场景：线程池、全局缓存、浏览器中的window对象、登录浮框
+#### 实现单例模式
+```javascript
+const Singleton = function() {
+
+}
+```
 ### 策略模式
 ### 代理模式
 ### 迭代器模式
