@@ -301,7 +301,7 @@ Singleton.getInstance = function(name) {
     return this.instance
 }
 ```
-####透明的单例模式
+#### 透明的单例模式
 ```javascript
 const CreateDiv(function(){
     const instance
