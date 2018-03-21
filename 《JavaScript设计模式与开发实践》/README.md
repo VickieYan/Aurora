@@ -287,7 +287,121 @@ const addEvent = function(elem, type, handler) {
 #### 实现单例模式
 ```javascript
 const Singleton = function() {
+    this.name = name
+    this.instance = null
+}
+Singleton.prototype.getName = function() {
+    alert(this.name)
+}
 
+Singleton.getInstance = function(name) {
+    if(!this.instance) {
+        this.instance = new Singleton(name)
+    }
+    return this.instance
+}
+```
+####透明的单例模式
+```javascript
+const CreateDiv(function(){
+    const instance
+    const CreateDiv = function(html) {
+        if(instance) {
+            return instance
+        }
+        this.html = html
+        this.init()
+        return instance = this
+    }
+    CreateDiv.prototype.init = function() {
+        const div = document.createElement('div')
+        div.innerHTML = this.html
+        document.body.appenChild(div)
+    }
+    return CreateDiv
+})()
+
+const CreateDiv = function(html) {
+    if(instance) {
+        return instance
+    }
+    this.html = html
+    this.init()
+    return instance = this
+}
+}
+```
+CreateDiv实际上负责了两件事，第一是创建对象和执行init方法，第二是保证只有一个对象。
+#### 用代理实现单例模式
+```javascript
+const CreateDiv = function(html) {
+    this.html = html
+    this.init()
+}
+
+CreateDiv.prototype.init = function() {
+    const div = document.createElement('div')
+    div.innerHTML = this.html
+    document.body.appendChild(div)
+}
+
+const ProxySingletonCreateDiv = (function(){
+    let instance
+    return function(html) {
+        if(!instance) {
+            instance = new CreateDiv(html)
+        }
+        return instance
+    }
+})()
+
+const a = new ProxySingletonCreateDiv('box1')
+const b = new ProxySingletonCreateDiv('box2')
+alert(a === b) // true
+```
+#### JavaScript中的单例模式
+JavaScript是一门无类（class-free）语言。全局变量不是单例模式，但是在JavaScript的开发中，我们经常会把全局变量当成单例来使用。
+
+我们应该尽量减少全局变量的使用。解决这个问题我们可以通过动态创建命名空间。
+```javascript
+const MyApp = {}
+MyApp.namespace = function(name) {
+    const parts = name.split('.')
+    const current = MyApp
+    for(let i in parts) {
+        if(!current[parts[i]]) {
+            current[parts[i]] = {}
+        }
+        current = current[parts[i]]
+    }
+}
+MyApp.namespace('event')
+MyApp.namespace('dom.style')
+```
+用闭包封装私有变量。可用下划线来表示私有变量。
+#### 惰性单例✨
+惰性单例指的是在需要的时候才创建对象实例。
+```javascript
+const getSingle = function( fn ) {
+    const result
+    return function() {
+        return result || (result = fn.apply(this,arguments))
+    }
+}
+
+const createLoginLayer = function() {
+    const div = document.createElement('div')
+    div.innerHTML = '我是登录框'
+    div.style.display = 'none'
+    document.body.appendChild('div')
+    return div
+}
+
+const createSingleLoginLayer = getSingle(createLoginLayer)
+
+document.getElementById('loginBtn').onClick = function() {
+    const createSingleLoginLayer = createSingleLoginLayer()
+    createSingleLoginLayer.style.display = 'block' 
 }
 ```
 ### 策略模式
