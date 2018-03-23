@@ -405,6 +405,25 @@ document.getElementById('loginBtn').onClick = function() {
 }
 ```
 ### 策略模式
+定义： 定义一系列的算法，把它们一个个封装起来，并且使他们可以相互替换。
+#### 用策略模式计算奖金
+```javascript
+const strategies = {
+    "S": function(salary) {
+        return salary * 4
+    },
+    "A": function(salary) {
+        return salary * 3
+    },
+    "B": function(salary) {
+        return salary * 2
+    }
+}
+
+const calculateBonus = function(level, salary) {
+    return strategies[level](salary)
+}
+```
 ### 代理模式
 ### 迭代器模式
 ### 发布-订阅模式
