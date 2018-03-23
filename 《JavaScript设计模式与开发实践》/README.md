@@ -285,8 +285,217 @@ const cost = (function() {
 ```
 
 
+
+##### uncurrying
+反柯里化扩大函数的适用范围
+```javascript
+Function.prototype.uncurrying = function() {
+    const self = this
+    return function() {
+        const obj = Array.prototype.shift.call(arguments)
+        return self.apply(obj, arguments)
+    }
+}
+
+const push = Array.prototype.push.uncurrying()
+```
+
+##### 函数节流
+函数被频繁调用的场景：
+* window.onresize
+* mousemove
+* 上传进度
+```javascript
+const throttle = function(fn, interval) {
+    const _self = fn,
+          timer,
+          firstTime = true
+    return function() {
+        const  args = arguments,
+               __me = this
+        if (firstTime) {
+            __self.apply(__me, args)
+            return firstTime = false
+        }
+
+        if(timer) {
+            return false
+        }
+
+        timer = setTimeout(function() {
+            clearTimeout(timer)
+            timer = null
+            __self.apply(__me, args)
+        }, interval || 500)
+    }
+}
+```
+
+##### 分时函数
+```javascript
+const timeChunk = function(ary, fn, count) {
+    const obj, t
+    const len = ary.length
+    const start =  function() {
+        for (let i = 0; i < Math.min(count || 1, ary.length); i++) {
+            const obj = ary.shift()
+            fn(obj)
+        }
+    }
+
+    return function() {
+        t = setInterval(function() {
+            if (ary.length === 0)  {
+                return clearInterval(t)
+            }
+            start()
+        }, 200)
+    }
+}
+```
+##### 惰性加载函数
+```javascript
+const addEvent = function(elem, type, handler) {
+    if (window.addEventListener) {
+        addEvent = function(elem, type, handler) {
+            elem.addEventListener(type, false, false)
+        }
+    } else if (window.attachEvent) {
+        addEvent = function(elem, type, handler) {
+            elem.attachEvent('on' + type, handler)
+        }
+    }
+    addEvent(elem, type, handler)
+}
+```
+这个操作也比较神奇，第一次进入这个函数，函数内部会重写这个函数，减少了冗余的条件判断。
+
+
 ## 设计模式
 ### 单例模式
+定义：保证一个类仅有一个实例，并提供一个访问它的全局访问点。
+
+场景：线程池、全局缓存、浏览器中的window对象、登录浮框
+#### 实现单例模式
+```javascript
+const Singleton = function() {
+    this.name = name
+    this.instance = null
+}
+Singleton.prototype.getName = function() {
+    alert(this.name)
+}
+
+Singleton.getInstance = function(name) {
+    if(!this.instance) {
+        this.instance = new Singleton(name)
+    }
+    return this.instance
+}
+```
+#### 透明的单例模式
+```javascript
+const CreateDiv(function(){
+    const instance
+    const CreateDiv = function(html) {
+        if(instance) {
+            return instance
+        }
+        this.html = html
+        this.init()
+        return instance = this
+    }
+    CreateDiv.prototype.init = function() {
+        const div = document.createElement('div')
+        div.innerHTML = this.html
+        document.body.appenChild(div)
+    }
+    return CreateDiv
+})()
+
+const CreateDiv = function(html) {
+    if(instance) {
+        return instance
+    }
+    this.html = html
+    this.init()
+    return instance = this
+}
+}
+```
+CreateDiv实际上负责了两件事，第一是创建对象和执行init方法，第二是保证只有一个对象。
+#### 用代理实现单例模式
+```javascript
+const CreateDiv = function(html) {
+    this.html = html
+    this.init()
+}
+
+CreateDiv.prototype.init = function() {
+    const div = document.createElement('div')
+    div.innerHTML = this.html
+    document.body.appendChild(div)
+}
+
+const ProxySingletonCreateDiv = (function(){
+    let instance
+    return function(html) {
+        if(!instance) {
+            instance = new CreateDiv(html)
+        }
+        return instance
+    }
+})()
+
+const a = new ProxySingletonCreateDiv('box1')
+const b = new ProxySingletonCreateDiv('box2')
+alert(a === b) // true
+```
+#### JavaScript中的单例模式
+JavaScript是一门无类（class-free）语言。全局变量不是单例模式，但是在JavaScript的开发中，我们经常会把全局变量当成单例来使用。
+
+我们应该尽量减少全局变量的使用。解决这个问题我们可以通过动态创建命名空间。
+```javascript
+const MyApp = {}
+MyApp.namespace = function(name) {
+    const parts = name.split('.')
+    const current = MyApp
+    for(let i in parts) {
+        if(!current[parts[i]]) {
+            current[parts[i]] = {}
+        }
+        current = current[parts[i]]
+    }
+}
+MyApp.namespace('event')
+MyApp.namespace('dom.style')
+```
+用闭包封装私有变量。可用下划线来表示私有变量。
+#### 惰性单例✨
+惰性单例指的是在需要的时候才创建对象实例。
+```javascript
+const getSingle = function( fn ) {
+    const result
+    return function() {
+        return result || (result = fn.apply(this,arguments))
+    }
+}
+
+const createLoginLayer = function() {
+    const div = document.createElement('div')
+    div.innerHTML = '我是登录框'
+    div.style.display = 'none'
+    document.body.appendChild('div')
+    return div
+}
+
+const createSingleLoginLayer = getSingle(createLoginLayer)
+
+document.getElementById('loginBtn').onClick = function() {
+    const createSingleLoginLayer = createSingleLoginLayer()
+    createSingleLoginLayer.style.display = 'block' 
+}
+```
 ### 策略模式
 ### 代理模式
 ### 迭代器模式
