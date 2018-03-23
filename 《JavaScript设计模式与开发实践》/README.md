@@ -172,7 +172,7 @@ const result = subtract(multiply(add(1, 2), 3), 4)
 </html>
 ```
 #### 闭包的作用
-封装变量
+##### 封装变量
 ```javascript
 // 为了不把cache暴露在全局作用域下，我们做如下操作
 const mult = (function() {
@@ -190,7 +190,99 @@ const mult = (function() {
     }
 })()
 ```
+##### 延续局部变量的寿命
+img对象经常用于进行数据上报
+```javascript
+const report  = function(src) {
+    cosnt img  = new Image()
+    img.src = src
+}
+```
+但是这种做法可能会造成数据丢失，因为img是report中的局部变量，当report函数的调用结束后，img局部变量随即被销毁，而此时还没来得及发出HTTP请求。我们可以利用闭包把img变量封装起来。
+```javascript
+const report = (function() {
+    const imgs = []
+    return function(src) {
+        const img = new Image()
+        imgs.push(img)
+        img.src = src
+    }
+})()
+```
+#### 用闭包实现命令模式
+命令模式的意图是把请求封装为对象，从而分离请求的发起者和请求的接收者
 
+#### 闭包和内存管理
+如果闭包的作用域链中保存着一些DOM节点，容易形成循环引用，可能造成内存泄漏。
+将变量设置为null可以切断这种连接。
+
+#### 高阶函数
+高阶函数是指至少满足下列条件之一的函数
+* 函数可以作为参数被传递
+* 函数可以作为返回值输出
+
+#### 高阶函数实现AOP
+AOP(Aspect Oriented Programming)的主要作用是把一些核心业务逻辑模块无关的功能抽离出来
+
+下面是一段我懵逼了半天的骚操作
+```javascript
+    Function.prototype.before = function(beforefn) {
+        const __self = this // this -> 调用该函数的对象 -> 即func
+        return function() { // this -> window
+            beforefn.apply(this, arguments) // window调用beforefn
+            return __self.apply(this, arguments) // window调用func 返回值为func()的返回值
+        }
+    }
+
+    Function.prototype.after = function(afterfn) {
+        const __self = this // 调用该函数的对象 -> 即调用 func.before() 返回的函数
+        return function() { // [入口] 最后func()调用的是该函数 this -> window
+            const ret = __self.apply(this, arguments) // window 调用 func.before() 返回的函数  ret为func()的返回值
+            afterfn.apply(this, arguments) // window调用afterfn
+            return ret // [出口]返回func()的返回值
+        }
+    }
+
+    let func = function() {
+        console.log(2)
+        return 'i am ret'
+    }
+
+    func = func.before(function(){
+        console.log(1)
+    }).after(function() {
+        console.log(3)
+    })
+
+    func()
+```
+这段操作是真的骚,作者说它叫装饰者模式。
+
+#### 高阶函数的其他应用
+##### currying
+currying又称分步求值。
+```javascript
+const currying = function(fn) {
+    const args = []
+    return function() {
+        if (arguments.length === 0) {
+            return fn(...args)
+        } else {
+            args.push(...arguments)
+            // console.log(this)
+            console.log(arguments.callee)
+            return arguments.callee //该函数本身
+        }
+    }
+}
+
+const cost = (function() {
+    const money = 0
+    return function() {
+       return money = Array.prototype.slice.call(arguments).reduce((accumulator, currentValue) => accumulator + currentValue)
+    }
+})()
+```
 
 
 ## 设计模式
