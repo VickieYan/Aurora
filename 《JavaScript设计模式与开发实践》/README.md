@@ -283,9 +283,6 @@ const cost = (function() {
     }
 })()
 ```
-
-
-
 ##### uncurrying
 反柯里化扩大函数的适用范围
 ```javascript
