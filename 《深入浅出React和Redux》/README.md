@@ -166,10 +166,206 @@ this.foo = ::this.foo
 使用 es6 语法时这个函数不会产生作用
 
 * componentWillMount
+
+我们通常不定义该函数，因为这时调用 this.setState 不会引起任何重绘。
+
 * render
 * componentDidMount
 
+  如果需要配合 Jquery 等 UI 库时可在该生命周期执行。
+
+函数执行循序如下
+
+```
+enter componentWillMount First
+enter render First
+enter componentWillMount Second
+enter render Second
+enter componentWillMount Third
+enter render Third
+enter componentDidMount First
+enter componentDidMount Second
+enter componentDidMount Third
+```
+
+render 函数本身并不往 DOM 树上渲染或者装载内容，它只是返回一个 JSX 对象，然后由 React 库来根据返回对象绝对如何渲染。
+
+componentWillMount 可以在服务端调用，componentDidMount 只能在客户端调用。
+
+#### 更新过程
+
+* componentWillReceiveProps(nextProps)
+
+  只要是父组件的 render 函数被调用，在 render 函数里面被渲染的子组件就会经历更新过程。
+
+* shouldComponentUpdate(nextProps, nextState)
+
+默认返回 true，需要重新渲染时返回 ture,不需要时返回 false.
+
+避免不必要的重新渲染，大大提升性能。
+
+#### 卸载过程
+
+* componentWillUnmount
+
+这个函数适合做一些清理工作
+
+### 组件向外传递数据
+
+在 props 上定义处理函数
+
+### React 组件 state 和 prop 的局限
+
+如何保证数据一致性
+
 ## 从 Flux 到 Redux
+
+### Flux
+
+Flux 以替换 Backbone.js、Ember.js 等 MVC 一族为目的。
+
+#### MVC 框架的缺陷
+
+* Model 负责管理数据，大部分业务逻辑也应该放在 Model 中
+* View 负责渲染用户界面，应该避免在 View 中涉及业务逻辑
+* Controller 负责接受用户输入，根据用户输入调用对应 Model 逻辑，并把数据结果交给 View。
+
+MVC 框架
+![MVC框架](http://m.qpic.cn/psb?/V10ZHE9M4DB6nN/Md6ucSW5tklugO0c9EKOLIlZOLBdkPPs6Ds*Vn5cTPk!/b/dAgBAAAAAAAA&bo=7AEvAewBLwEDCSw!&rf=viewer_4)
+
+在 MVC 框架中，让 View 和 Model 直接对话简直是灾难。
+
+Flux 特点：更严格的数据流控制。
+
+Flux 框架
+![Flux框架](http://m.qpic.cn/psb?/V10ZHE9M4DB6nN/drX.OquFYn7ECand6tKe8X2HAlwIFKYt8zW3RlXE*bk!/b/dAgBAAAAAAAA&bo=QALIAEACyAADCSw!&rf=viewer_4)
+
+* Dispatcher 处理动作分发，维持 Store 之间的依赖关系
+* Store 负责存储数据和处理数据相关逻辑
+* Action 驱动 Dispatcher 和 JavaScript 对象
+* View 视图部分，负责显示用户界面
+
+#### Flux 应用
+
+1.  Dispatcher
+
+Dispatcher 存在的作用，就是用来派发 action
+
+```jsx
+// AppDispatcher.js
+import { Dispatcher } from "flux";
+
+export default new Dispatcher();
+```
+
+2.  action
+
+```jsx
+// ActionTypes.js
+export const INCREMENT = "increment";
+export const DECREMENT = "decrement";
+```
+
+```jsx
+// Action.js
+import * as ActionTypes from "./ActionTypes.js";
+import AppDispatcher from "./AppDispatcher.js";
+
+export const increment = counterCaption => {
+  AppDispatcher.dispatch({
+    type: AtionType.INCREMENT,
+    counterCaption: counterCaption
+  });
+};
+
+export const decrement = counterCaption => {
+  AppDispatcher.dispatch({
+    type: AtionType.DECREMENT,
+    counterCaption: counterCaption
+  });
+};
+```
+
+3.  Store
+
+```jsx
+// CounterStore.js
+import AppDispatcher from "AppDispatcher.js";
+import * as ActionTypes from "./ActionTypes.js";
+const counterValues = {
+  First: 0,
+  Second: 10,
+  Third: 30
+};
+
+const CounterStore = Object.assign({}, EventEmitter.prototype, {
+  getConterValues: function() {
+    return conterValues;
+  },
+  emitChange: function() {
+    this.emit(CHANGE_EVENT);
+  },
+  addChangeListener: function(callback) {
+    this.on(CHANGE_EVENT, callback);
+  },
+  removeChangeListener: function(callback) {
+    this.removeListener(CHANGE_EVENT, callback);
+  }
+});
+CounterStore.dispatchToken = AppDispatcher.register(action => {
+  if (action.type === AtionType.INCREMENT) {
+    counterValues[action.counterCaption]++, CounterStore.emitChange();
+  } else if (action.type === AtionType.DECREMENT) {
+    counterValues[action.counterCaption]--, CounterStore.emitChange();
+  }
+});
+```
+
+```jsx
+// SummaryStore.js
+const SummaryStore = Object.assign({}, EventEmitter.prototype, {
+  getConterValues: function() {
+    return conterValues;
+  },
+  emitChange: function() {
+    this.emit(CHANGE_EVENT);
+  },
+  addChangeListener: function(callback) {
+    this.on(CHANGE_EVENT, callback);
+  },
+  removeChangeListener: function(callback) {
+    this.removeListener(CHANGE_EVENT, callback);
+  },
+  getSummary: function() {
+    return computeSummary(CounterStore.getCounterValues);
+  }
+});
+
+function computeSummary(counterValue) {
+  let summary = 0;
+  for (const key in counterValues) {
+    if (counterValues.hasOwnProperty(key)) {
+      summary += counterValues[key];
+    }
+  }
+  return summary;
+}
+
+SummaryStore.dispatchToken = AppDispatcher.register(action => {
+  if (
+    action.type === ActionTypes.INCREMENT ||
+    action.type === ActionTypes.DECREMENT
+  ) {
+    AppDispatcher.waitFor([CounterStore.dispatchToken]);
+    SummaryStore.emitChange();
+  }
+});
+```
+
+4.  View
+
+```jsx
+```
 
 ## 模块化 React 和 Redux 应用
 
