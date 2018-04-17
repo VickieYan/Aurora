@@ -1,8 +1,8 @@
-# 深入React技术栈
+# 深入 React 技术栈
 
-## 初入React世界
+## 初入 React 世界
 
-### React简介
+### React 简介
 
 #### 专注视图层
 

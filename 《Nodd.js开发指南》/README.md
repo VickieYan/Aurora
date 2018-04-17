@@ -1,63 +1,81 @@
-# 《Node.js开发指南》
+# 《Node.js 开发指南》
+
 关键字
-* 异步式I/O
-* 事件驱动
-* V8引擎
-* libuv
-* REPL read-eval-print loop
-* 为网络诞生的平台
-* 单线程非阻塞i/o相较于多线程阻塞i／o节省了创建多线程的开销
-* 缺点是不符合设计思维，让流程控制变得晦涩难懂
-* node不鼓励使用同步io
-* 模块和包机制参照了CommonJS的标准，但并未完全遵循 
-* Node--npm Python--pip Ruby--gem
-* npm安装包时如果注册在本地可以通过require引用，如果需要使用命令行，则需安装到全局（安装到全局时配置了PATH）
-* Express在处理路由规则时，会优先匹配先定义的路由规则
-* connect-mongo
+
+*   异步式 I/O
+*   事件驱动
+*   V8 引擎
+*   libuv
+*   REPL read-eval-print loop
+*   为网络诞生的平台
+*   单线程非阻塞 i/o 相较于多线程阻塞 i／o 节省了创建多线程的开销
+*   缺点是不符合设计思维，让流程控制变得晦涩难懂
+*   node 不鼓励使用同步 io
+*   模块和包机制参照了 CommonJS 的标准，但并未完全遵循
+*   Node--npm Python--pip Ruby--gem
+*   npm 安装包时如果注册在本地可以通过 require 引用，如果需要使用命令行，则需安装到全局（安装到全局时配置了 PATH）
+*   Express 在处理路由规则时，会优先匹配先定义的路由规则
+*   connect-mongo
 
 监控模块的工具
+
 ```
-nodemon 
+nodemon
 suepervisor
 node-dev
 ```
+
 # 核心模块
+
 ## 全局对象
-* process
-* console
+
+*   process
+*   console
+
 ## 常用工具
-* util.inherits
-* util.inspect（将任意对象转换为字符串）
+
+*   util.inherits
+*   util.inspect（将任意对象转换为字符串）
+
 ## 事件机制(最重要的模块没有之一)
+
 EventEmitter
+
 ## 文件系统访问
+
 文件的读取、写入、更名、删除、遍历目录、链接
-* fs.readFile()
-* fs.readFileSync()
-* fs.open()
-* fs.read()
+
+*   fs.readFile()
+*   fs.readFileSync()
+*   fs.open()
+*   fs.read()
+
 ## HTTP 服务器与客户端
-* app.all() 支持把所有的请求绑定到同一个响应函数
-* next() 转移控制权
+
+*   app.all() 支持把所有的请求绑定到同一个响应函数
+*   next() 转移控制权
 
 # REST(Representational State Transfer) 表征状态转移
-* GET（获取）： 请求获取制定资源
-* HEAD： 请求制定资源的响应头
-* POST（新增）： 向指定资源提交数据
-* PUT（更新）： 请求服务器存储一个资源
-* DELETE（删除）： 请求服务器删除指定资源
-* TRACE: 回显服务器收到的请求，主要用于测试或诊断
-* CONNECT： HTTP/1.1协议中预留给能够将连接改为管道方式的代理服务器（？）
-* OPTIONS： 返回服务器支持的HTTP请求方式
 
-# ejs语法
-* <% code %>: JavaScript代码
-* <%= code %>: 显示替换过HTML特殊字符的内容
-* <%- code %>: 显示原始HTML内容
+*   GET（获取）： 请求获取制定资源
+*   HEAD： 请求制定资源的响应头
+*   POST（新增）： 向指定资源提交数据
+*   PUT（更新）： 请求服务器存储一个资源
+*   DELETE（删除）： 请求服务器删除指定资源
+*   TRACE: 回显服务器收到的请求，主要用于测试或诊断
+*   CONNECT： HTTP/1.1 协议中预留给能够将连接改为管道方式的代理服务器（？）
+*   OPTIONS： 返回服务器支持的 HTTP 请求方式
 
+# ejs 语法
+
+*   <% code %>: JavaScript 代码
+*   <%= code %>: 显示替换过 HTML 特殊字符的内容
+*   <%- code %>: 显示原始 HTML 内容
 
 # Q&A
-## app.all('*') and app.use('/') 的区别
+
+## app.all('\*') and app.use('/') 的区别
+
 app.use 只匹配前缀
 
 ```
@@ -80,10 +98,13 @@ app.all( "/product/*" , handler);
 // will match /product/cool
 // will match /product/foo
 ```
+
 ## Using Partials in a Jade file
+
 Jade newest version doesn't support partials.
 
-## HTTP是一个无状态的协议。这句话里的无状态是什么意思？
+## HTTP 是一个无状态的协议。这句话里的无状态是什么意思？
+
 ```
 有状态：
 A：你今天中午吃的啥？
