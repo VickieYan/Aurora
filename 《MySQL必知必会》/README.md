@@ -1,4 +1,5 @@
 # SQL必知必会
+![img](http://m.qpic.cn/psb?/V10ZHE9M4DB6nN/3xuP9iJVzUxWlRpLRB8smrTheacUVytY991vqOZerVM!/b/dFUAAAAAAAAA&bo=uAaAAv4GmgIDCXA!&rf=viewer_4)
 ## 第1章 了解SQL
 ### 数据库基础
 #### 什么是数据库
