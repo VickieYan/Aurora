@@ -5,7 +5,7 @@
 
 # 书单
 
-*   《高性能 JavaScript》 ![progress](http://progressed.io/bar/100)
+*   [《高性能 JavaScript》](./《高性能JavaScript》) ![progress](http://progressed.io/bar/100)
 *   《Node.js 开发指南》 ![progress](http://progressed.io/bar/100)
 *   《MySQL必知必会》![progress](http://progressed.io/bar/100)
 *   《深入浅出 React 和 Redux》 ![progress](http://progressed.io/bar/38)
